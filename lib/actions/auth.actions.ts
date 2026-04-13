@@ -39,11 +39,14 @@ export async function signUp(_prevState: ActionResult, formData: FormData): Prom
   }
 
   const supabase = await createClient()
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://okei-agency.vercel.app'
+
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
       data: { full_name: parsed.data.full_name },
+      emailRedirectTo: `${appUrl}/auth/callback`,
     },
   })
 
@@ -51,7 +54,7 @@ export async function signUp(_prevState: ActionResult, formData: FormData): Prom
     return { data: null, error: error.message, success: false }
   }
 
-  redirect('/create-workspace')
+  redirect('/login?message=check_email')
 }
 
 export async function signOut(): Promise<void> {
