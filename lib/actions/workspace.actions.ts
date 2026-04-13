@@ -3,18 +3,23 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import type { Workspace } from '@/types/app.types'
+import type { Workspace, ActionResult } from '@/types/app.types'
 import { createWorkspaceSchema } from '@/lib/validations/workspace.schema'
 import { z } from 'zod'
 
-export async function createWorkspace(formData: FormData): Promise<void> {
+export async function createWorkspace(
+  _prevState: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
   const raw = {
     name: formData.get('name') as string,
     slug: formData.get('slug') as string,
   }
 
   const parsed = createWorkspaceSchema.safeParse(raw)
-  if (!parsed.success) return
+  if (!parsed.success) {
+    return { data: null, error: parsed.error.issues[0].message, success: false }
+  }
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -26,7 +31,13 @@ export async function createWorkspace(formData: FormData): Promise<void> {
     .select()
     .single()
 
-  if (error) return
+  if (error) {
+    const err = error as { code?: string; message: string }
+    if (err.code === '23505') {
+      return { data: null, error: 'Este slug já está em uso. Tente outro.', success: false }
+    }
+    return { data: null, error: err.message, success: false }
+  }
 
   const workspace = workspaceRaw as Workspace
 

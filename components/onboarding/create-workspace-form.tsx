@@ -1,28 +1,22 @@
 'use client'
 
-import { useState } from 'react'
-import { useFormStatus } from 'react-dom'
+import { useState, useActionState } from 'react'
 import { createWorkspace } from '@/lib/actions/workspace.actions'
 import { slugify } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Alert } from '@/components/ui/alert'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { APP_NAME } from '@/lib/constants'
 
-function SubmitButton() {
-  const { pending } = useFormStatus()
-  return (
-    <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? 'Criando...' : 'Criar workspace'}
-    </Button>
-  )
-}
+const initialState = { data: null, error: null, success: false }
 
 export function CreateWorkspaceForm() {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
+  const [state, formAction, isPending] = useActionState(createWorkspace, initialState)
 
   function handleNameChange(value: string) {
     setName(value)
@@ -38,7 +32,10 @@ export function CreateWorkspaceForm() {
         <CardDescription>Crie seu workspace para começar</CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={createWorkspace} className="space-y-4">
+        <form action={formAction} className="space-y-4">
+          {state.error && (
+            <Alert variant="destructive">{state.error}</Alert>
+          )}
           <div className="space-y-2">
             <Label htmlFor="name">Nome do workspace</Label>
             <Input
@@ -70,7 +67,9 @@ export function CreateWorkspaceForm() {
               Apenas letras minúsculas, números e hífens
             </p>
           </div>
-          <SubmitButton />
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? 'Criando...' : 'Criar workspace'}
+          </Button>
         </form>
       </CardContent>
     </Card>
