@@ -178,6 +178,100 @@ export type Database = {
           created_at?: string
         }
       }
+      projects: {
+        Row: {
+          id: string
+          workspace_id: string
+          client_id: string | null
+          name: string
+          slug: string
+          description: string | null
+          status: 'planning' | 'active' | 'paused' | 'completed' | 'cancelled'
+          start_date: string | null
+          end_date: string | null
+          budget: number | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          client_id?: string | null
+          name: string
+          slug: string
+          description?: string | null
+          status?: 'planning' | 'active' | 'paused' | 'completed' | 'cancelled'
+          start_date?: string | null
+          end_date?: string | null
+          budget?: number | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          client_id?: string | null
+          name?: string
+          slug?: string
+          description?: string | null
+          status?: 'planning' | 'active' | 'paused' | 'completed' | 'cancelled'
+          start_date?: string | null
+          end_date?: string | null
+          budget?: number | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      tasks: {
+        Row: {
+          id: string
+          workspace_id: string
+          project_id: string | null
+          client_id: string | null
+          title: string
+          description: string | null
+          status: 'backlog' | 'todo' | 'in_progress' | 'in_review' | 'done'
+          priority: 'low' | 'medium' | 'high' | 'urgent'
+          assignee_id: string | null
+          due_date: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          project_id?: string | null
+          client_id?: string | null
+          title: string
+          description?: string | null
+          status?: 'backlog' | 'todo' | 'in_progress' | 'in_review' | 'done'
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          assignee_id?: string | null
+          due_date?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          project_id?: string | null
+          client_id?: string | null
+          title?: string
+          description?: string | null
+          status?: 'backlog' | 'todo' | 'in_progress' | 'in_review' | 'done'
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          assignee_id?: string | null
+          due_date?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -195,6 +289,9 @@ export type Database = {
       member_role: 'owner' | 'admin' | 'member' | 'viewer'
       client_status: 'lead' | 'active' | 'paused' | 'churned'
       client_tier: 'basic' | 'standard' | 'premium' | 'enterprise'
+      project_status: 'planning' | 'active' | 'paused' | 'completed' | 'cancelled'
+      task_status: 'backlog' | 'todo' | 'in_progress' | 'in_review' | 'done'
+      task_priority: 'low' | 'medium' | 'high' | 'urgent'
     }
   }
 }

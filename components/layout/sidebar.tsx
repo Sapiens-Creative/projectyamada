@@ -41,11 +41,11 @@ const icons = {
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '', icon: 'LayoutDashboard', soon: false },
   { label: 'Clientes', href: '/clients', icon: 'Building2', soon: false },
-  { label: 'Projetos', href: '/projects', icon: 'FolderKanban', soon: true },
+  { label: 'Projetos', href: '/projects', icon: 'FolderKanban', soon: false },
   { label: 'Tarefas', href: '/tasks', icon: 'CheckSquare', soon: true },
   { label: 'Financeiro', href: '/financial', icon: 'DollarSign', soon: true },
   { label: 'Assets', href: '/assets', icon: 'Layers', soon: true },
-  { label: 'Equipe', href: '/team', icon: 'Users', soon: true },
+  { label: 'Equipe', href: '/team', icon: 'Users', soon: false },
   { label: 'Relatórios', href: '/reports', icon: 'BarChart3', soon: true },
 ]
 
