@@ -5,7 +5,10 @@ import { ClientDetailHeader } from '@/components/clients/client-detail-header'
 import { ContactList } from '@/components/clients/contact-list'
 import { Badge } from '@/components/ui/badge'
 import { CLIENT_STATUS_LABELS, CLIENT_TIER_LABELS } from '@/lib/constants'
-import type { Client, ClientContact } from '@/types/app.types'
+import type { Client, ClientContact, ProjectWithClient } from '@/types/app.types'
+import { ProjectCard } from '@/components/projects/project-card'
+import { EmptyState } from '@/components/shared/empty-state'
+import { FolderKanban } from 'lucide-react'
 
 type ClientWithContacts = Client & { client_contacts: ClientContact[] }
 
@@ -17,15 +20,15 @@ export default async function ClientDetailPage({
   const { workspaceSlug, clientId } = await params
   const supabase = await createClient()
 
-  const { data: rawClient } = await supabase
-    .from('clients')
-    .select('*, client_contacts(*)')
-    .eq('id', clientId)
-    .single()
+  const [{ data: rawClient }, { data: projectsRaw }] = await Promise.all([
+    supabase.from('clients').select('*, client_contacts(*)').eq('id', clientId).single(),
+    supabase.from('projects').select('*, clients(id, name, slug, logo_url)').eq('client_id', clientId).order('created_at', { ascending: false }),
+  ])
 
   const client = rawClient as ClientWithContacts | null
-
   if (!client) notFound()
+
+  const projects = (projectsRaw ?? []) as ProjectWithClient[]
 
   return (
     <div className="space-y-6">
@@ -41,7 +44,7 @@ export default async function ClientDetailPage({
         <TabsList>
           <TabsTrigger value="overview">Visão geral</TabsTrigger>
           <TabsTrigger value="contacts">Contatos ({client.client_contacts?.length ?? 0})</TabsTrigger>
-          <TabsTrigger value="projects" disabled>Projetos</TabsTrigger>
+          <TabsTrigger value="projects">Projetos ({projects.length})</TabsTrigger>
           <TabsTrigger value="files" disabled>Arquivos</TabsTrigger>
         </TabsList>
 
@@ -60,10 +63,29 @@ export default async function ClientDetailPage({
               <p className="text-sm whitespace-pre-wrap">{client.notes}</p>
             </div>
           )}
+          {!client.website && !client.notes && (
+            <p className="text-sm text-muted-foreground">Nenhuma informação adicional.</p>
+          )}
         </TabsContent>
 
         <TabsContent value="contacts" className="pt-4">
           <ContactList contacts={client.client_contacts ?? []} clientId={clientId} />
+        </TabsContent>
+
+        <TabsContent value="projects" className="pt-4">
+          {projects.length === 0 ? (
+            <EmptyState
+              icon={FolderKanban}
+              title="Nenhum projeto vinculado"
+              description="Crie um projeto e vincule a este cliente."
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {projects.map((project) => (
+                <ProjectCard key={project.id} project={project} workspaceSlug={workspaceSlug} />
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

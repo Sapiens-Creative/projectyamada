@@ -3,13 +3,16 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getProject } from '@/lib/actions/project.actions'
 import { getClients } from '@/lib/actions/client.actions'
-import type { Workspace, ProjectWithClient, Client } from '@/types/app.types'
+import { getTeamMembers } from '@/lib/actions/team.actions'
+import type { Workspace, ProjectWithClient, Client, TaskWithAssignee, WorkspaceMemberWithProfile } from '@/types/app.types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, Calendar, DollarSign, Building2 } from 'lucide-react'
 import { EditProjectSheet } from '@/components/projects/edit-project-sheet'
+import { ProjectTaskList } from '@/components/projects/project-task-list'
+import { NewTaskSheet } from '@/components/tasks/new-task-sheet'
 
 const STATUS_LABELS: Record<string, string> = {
   planning: 'Planejamento',
@@ -44,14 +47,22 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   if (!workspaceRaw) notFound()
   const workspace = workspaceRaw as Workspace
 
-  const [projectResult, clientsResult] = await Promise.all([
+  const [projectResult, clientsResult, membersResult, { data: tasksRaw }] = await Promise.all([
     getProject(projectId),
     getClients(workspace.id),
+    getTeamMembers(workspace.id),
+    supabase
+      .from('tasks')
+      .select('*, assignee:profiles!tasks_assignee_id_fkey(id, full_name, avatar_url)')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false }),
   ])
 
   if (!projectResult.data) notFound()
   const project = projectResult.data as ProjectWithClient
   const clients = (clientsResult.data ?? []) as Client[]
+  const members = (membersResult.data ?? []) as WorkspaceMemberWithProfile[]
+  const tasks = (tasksRaw ?? []) as TaskWithAssignee[]
 
   return (
     <div className="space-y-6">
@@ -141,14 +152,19 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Tarefas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">Módulo de tarefas em desenvolvimento.</p>
-        </CardContent>
-      </Card>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold">Tarefas ({tasks.length})</h2>
+          <NewTaskSheet
+            workspaceId={workspace.id}
+            workspaceSlug={workspaceSlug}
+            projects={clients.length > 0 ? [project] : [project]}
+            clients={clients}
+            members={members}
+          />
+        </div>
+        <ProjectTaskList tasks={tasks} workspaceSlug={workspaceSlug} />
+      </div>
     </div>
   )
 }
