@@ -10,11 +10,14 @@ import type { ActionResult } from '@/types/app.types'
 
 const initialState: ActionResult = { data: null, error: null, success: false }
 
-export function LoginForm() {
+export function LoginForm({ workspaceSlug }: { workspaceSlug?: string }) {
   const [state, action, pending] = useActionState(signIn, initialState)
 
   return (
     <form action={action} className="space-y-4">
+      {workspaceSlug && (
+        <input type="hidden" name="workspace_slug" value={workspaceSlug} />
+      )}
       {state.error && (
         <Alert variant="destructive">
           <AlertDescription>{state.error}</AlertDescription>

@@ -23,6 +23,12 @@ export async function signIn(_prevState: ActionResult, formData: FormData): Prom
     return { data: null, error: 'Email ou senha inválidos', success: false }
   }
 
+  // If a workspace slug was passed (e.g. from /login?workspace=slug), go there
+  const workspaceSlug = formData.get('workspace_slug') as string | null
+  if (workspaceSlug) {
+    redirect(`/${workspaceSlug}`)
+  }
+
   redirect('/')
 }
 

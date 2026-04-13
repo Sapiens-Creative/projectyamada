@@ -5,17 +5,26 @@ import { Alert } from '@/components/ui/alert'
 import { APP_NAME } from '@/lib/constants'
 
 interface PageProps {
-  searchParams: Promise<{ error?: string; message?: string }>
+  searchParams: Promise<{ error?: string; message?: string; workspace?: string }>
 }
 
 export default async function LoginPage({ searchParams }: PageProps) {
-  const { error, message } = await searchParams
+  const { error, message, workspace: workspaceSlug } = await searchParams
+
+  // Humanize slug for display (e.g. "minha-agencia" → "Minha Agencia")
+  const workspaceName = workspaceSlug
+    ? workspaceSlug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    : null
 
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">{APP_NAME}</CardTitle>
-        <CardDescription>Entre na sua conta</CardDescription>
+        <CardTitle className="text-2xl">
+          {workspaceName ?? APP_NAME}
+        </CardTitle>
+        <CardDescription>
+          {workspaceName ? `Entre para acessar ${workspaceName}` : 'Entre na sua conta'}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {error === 'confirmation_failed' && (
@@ -33,7 +42,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
             Email confirmado! Faça login para continuar.
           </Alert>
         )}
-        <LoginForm />
+        <LoginForm workspaceSlug={workspaceSlug} />
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm text-muted-foreground">
