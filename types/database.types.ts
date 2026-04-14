@@ -112,6 +112,15 @@ export type Database = {
           created_by: string | null
           created_at: string
           updated_at: string
+          cnpj: string | null
+          razao_social: string | null
+          revenue_range: '<100k' | '100k-500k' | '500k-2m' | '>2m' | null
+          address_city: string | null
+          address_state: string | null
+          contract_start: string | null
+          contract_renewal: string | null
+          monthly_fee: number | null
+          tags: string[]
         }
         Insert: {
           id?: string
@@ -128,6 +137,15 @@ export type Database = {
           created_by?: string | null
           created_at?: string
           updated_at?: string
+          cnpj?: string | null
+          razao_social?: string | null
+          revenue_range?: '<100k' | '100k-500k' | '500k-2m' | '>2m' | null
+          address_city?: string | null
+          address_state?: string | null
+          contract_start?: string | null
+          contract_renewal?: string | null
+          monthly_fee?: number | null
+          tags?: string[]
         }
         Update: {
           id?: string
@@ -144,6 +162,50 @@ export type Database = {
           created_by?: string | null
           created_at?: string
           updated_at?: string
+          cnpj?: string | null
+          razao_social?: string | null
+          revenue_range?: '<100k' | '100k-500k' | '500k-2m' | '>2m' | null
+          address_city?: string | null
+          address_state?: string | null
+          contract_start?: string | null
+          contract_renewal?: string | null
+          monthly_fee?: number | null
+          tags?: string[]
+        }
+      }
+      client_interactions: {
+        Row: {
+          id: string
+          workspace_id: string
+          client_id: string
+          type: 'email' | 'call' | 'meeting' | 'whatsapp' | 'note' | 'recording'
+          title: string
+          description: string | null
+          occurred_at: string
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          client_id: string
+          type: 'email' | 'call' | 'meeting' | 'whatsapp' | 'note' | 'recording'
+          title: string
+          description?: string | null
+          occurred_at?: string
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          client_id?: string
+          type?: 'email' | 'call' | 'meeting' | 'whatsapp' | 'note' | 'recording'
+          title?: string
+          description?: string | null
+          occurred_at?: string
+          created_by?: string | null
+          created_at?: string
         }
       }
       client_contacts: {

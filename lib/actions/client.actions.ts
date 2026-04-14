@@ -31,6 +31,12 @@ export async function getClient(clientId: string): Promise<ActionResult<Client &
   return { data: data as Client & { client_contacts: ClientContact[] }, error: null, success: true }
 }
 
+function parseTagsFromForm(formData: FormData): string[] {
+  const raw = formData.get('tags') as string | null
+  if (!raw) return []
+  return raw.split(',').map((t) => t.trim()).filter(Boolean)
+}
+
 export async function createClientAction(
   workspaceId: string,
   formData: FormData
@@ -43,6 +49,14 @@ export async function createClientAction(
     status: formData.get('status') as string,
     tier: formData.get('tier') as string,
     notes: formData.get('notes') as string,
+    cnpj: formData.get('cnpj') as string,
+    razao_social: formData.get('razao_social') as string,
+    revenue_range: formData.get('revenue_range') as string || undefined,
+    address_city: formData.get('address_city') as string,
+    address_state: formData.get('address_state') as string,
+    contract_start: formData.get('contract_start') as string,
+    contract_renewal: formData.get('contract_renewal') as string,
+    monthly_fee: formData.get('monthly_fee') as string,
   }
 
   const parsed = createClientSchema.safeParse(raw)
@@ -50,12 +64,13 @@ export async function createClientAction(
     return { data: null, error: parsed.error.issues[0].message, success: false }
   }
 
+  const tags = parseTagsFromForm(formData)
   const supabase = await createSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const { data, error } = await supabase
     .from('clients')
-    .insert({ ...parsed.data, workspace_id: workspaceId, created_by: user?.id })
+    .insert({ ...parsed.data, tags, workspace_id: workspaceId, created_by: user?.id })
     .select()
     .single()
 
@@ -83,11 +98,12 @@ export async function updateClientAction(
     return { data: null, error: parsed.error.issues[0].message, success: false }
   }
 
+  const tags = parseTagsFromForm(formData)
   const supabase = await createSupabaseClient()
 
   const { data, error } = await supabase
     .from('clients')
-    .update(parsed.data)
+    .update({ ...parsed.data, tags })
     .eq('id', clientId)
     .select()
     .single()
@@ -95,6 +111,7 @@ export async function updateClientAction(
   if (error) return { data: null, error: (error as { message: string }).message, success: false }
 
   revalidatePath(`/${workspaceSlug}/clients`)
+  revalidatePath(`/${workspaceSlug}/clients/${clientId}`)
   return { data: data as Client, error: null, success: true }
 }
 

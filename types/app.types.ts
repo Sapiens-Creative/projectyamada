@@ -56,3 +56,11 @@ export type AssetWithClient = Asset & {
 export type WorkspaceMemberWithProfile = WorkspaceMember & {
   profiles: Profile
 }
+
+export type ClientInteraction = Database['public']['Tables']['client_interactions']['Row']
+export type InteractionType = ClientInteraction['type']
+
+export type ClientWithInteractions = Client & {
+  client_contacts: ClientContact[]
+  client_interactions: ClientInteraction[]
+}

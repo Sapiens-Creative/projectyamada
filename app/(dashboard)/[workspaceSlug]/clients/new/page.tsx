@@ -20,12 +20,13 @@ export default async function NewClientPage({
   const workspaceId = (wsData as { id: string } | null)?.id
   if (!workspaceId) redirect('/create-workspace')
 
-  async function action(formData: FormData): Promise<void> {
+  async function action(formData: FormData) {
     'use server'
     const result = await createClientAction(workspaceId as string, formData)
     if (result.success && result.data) {
       redirect(`/${workspaceSlug}/clients/${result.data.id}`)
     }
+    return result
   }
 
   return (
