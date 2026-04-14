@@ -46,7 +46,7 @@ const NAV_ITEMS = [
   { label: 'Financeiro', href: '/financial', icon: 'DollarSign', soon: false },
   { label: 'Assets', href: '/assets', icon: 'Layers', soon: true },
   { label: 'Equipe', href: '/team', icon: 'Users', soon: false },
-  { label: 'Relatórios', href: '/reports', icon: 'BarChart3', soon: true },
+  { label: 'Relatórios', href: '/reports', icon: 'BarChart3', soon: false },
 ]
 
 export function AppSidebar({ workspaceSlug }: { workspaceSlug: string }) {
