@@ -1,5 +1,4 @@
 import { Building2, FolderKanban, CheckSquare, AlertTriangle } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Stats {
   totalClients: number
@@ -16,32 +15,32 @@ export function DashboardStats({ stats }: { stats: Stats }) {
       value: stats.activeClients,
       sub: `${stats.totalClients} no total`,
       icon: Building2,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      iconColor: 'text-blue-400',
+      iconBg: 'bg-blue-500/10',
     },
     {
       title: 'Projetos ativos',
       value: stats.activeProjects,
       sub: 'em andamento',
       icon: FolderKanban,
-      color: 'text-green-600',
-      bg: 'bg-green-50',
+      iconColor: 'text-emerald-400',
+      iconBg: 'bg-emerald-500/10',
     },
     {
       title: 'Tarefas pendentes',
       value: stats.pendingTasks,
       sub: 'a fazer / em progresso',
       icon: CheckSquare,
-      color: 'text-yellow-600',
-      bg: 'bg-yellow-50',
+      iconColor: 'text-amber-400',
+      iconBg: 'bg-amber-500/10',
     },
     {
       title: 'Tarefas atrasadas',
       value: stats.overdueTasks,
       sub: 'prazo vencido',
       icon: AlertTriangle,
-      color: stats.overdueTasks > 0 ? 'text-red-600' : 'text-gray-400',
-      bg: stats.overdueTasks > 0 ? 'bg-red-50' : 'bg-gray-50',
+      iconColor: stats.overdueTasks > 0 ? 'text-red-400' : 'text-white/30',
+      iconBg: stats.overdueTasks > 0 ? 'bg-red-500/10' : 'bg-white/[0.04]',
     },
   ]
 
@@ -50,20 +49,16 @@ export function DashboardStats({ stats }: { stats: Stats }) {
       {cards.map((card) => {
         const Icon = card.icon
         return (
-          <Card key={card.title}>
-            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {card.title}
-              </CardTitle>
-              <div className={`rounded-md p-1.5 ${card.bg}`}>
-                <Icon className={`h-4 w-4 ${card.color}`} />
+          <div key={card.title} className="card-sun rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-medium text-white/50 uppercase tracking-wide">{card.title}</p>
+              <div className={`rounded-lg p-2 ${card.iconBg}`}>
+                <Icon className={`h-4 w-4 ${card.iconColor}`} />
               </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{card.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{card.sub}</p>
-            </CardContent>
-          </Card>
+            </div>
+            <p className="text-3xl font-semibold text-white tracking-tight">{card.value}</p>
+            <p className="text-xs text-white/40 mt-1">{card.sub}</p>
+          </div>
         )
       })}
     </div>

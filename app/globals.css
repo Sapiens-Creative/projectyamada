@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-google-sans), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-google-sans), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,136 +39,159 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: calc(var(--radius) * 0.75);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-sm:  calc(var(--radius) * 0.5);
+  --radius-md:  calc(var(--radius) * 0.75);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
 }
 
 /* ============================================================
-   DARK GLASSMORPHISM — Default theme (always dark)
-   Inspired by Intercom: sharp geometry + Fin Orange accent
+   DARK — Grayscale foundation + sunlight gradient from top-right
+   Font: Google Sans
    ============================================================ */
 :root {
-  /* Base surfaces */
-  --background:        #07070f;
-  --foreground:        rgba(255,255,255,0.92);
+  /* --- Surfaces (true grayscale) --- */
+  --background:         #0c0c0c;
+  --foreground:         rgba(255,255,255,0.90);
 
-  /* Glass cards */
-  --card:              rgba(255,255,255,0.04);
-  --card-foreground:   rgba(255,255,255,0.92);
+  --card:               rgba(255,255,255,0.05);
+  --card-foreground:    rgba(255,255,255,0.90);
 
-  /* Popovers / dropdowns */
-  --popover:           rgba(15,15,28,0.92);
-  --popover-foreground: rgba(255,255,255,0.92);
+  --popover:            rgba(20,20,20,0.95);
+  --popover-foreground: rgba(255,255,255,0.90);
 
-  /* Primary — Fin Orange */
-  --primary:           #ff5600;
+  /* --- Primary: warm amber-orange (sunlight accent) --- */
+  --primary:            #f97316;
   --primary-foreground: #ffffff;
 
-  /* Secondary — subtle glass */
-  --secondary:         rgba(255,255,255,0.07);
-  --secondary-foreground: rgba(255,255,255,0.85);
+  /* --- Secondary: glass gray --- */
+  --secondary:          rgba(255,255,255,0.07);
+  --secondary-foreground: rgba(255,255,255,0.80);
 
-  /* Muted */
-  --muted:             rgba(255,255,255,0.06);
-  --muted-foreground:  rgba(255,255,255,0.45);
+  /* --- Muted --- */
+  --muted:              rgba(255,255,255,0.05);
+  --muted-foreground:   rgba(255,255,255,0.42);
 
-  /* Accent — glass highlight */
-  --accent:            rgba(255,86,0,0.12);
-  --accent-foreground: #ff5600;
+  /* --- Accent --- */
+  --accent:             rgba(249,115,22,0.12);
+  --accent-foreground:  #f97316;
 
-  /* Destructive */
-  --destructive:       #ef4444;
+  /* --- Destructive --- */
+  --destructive:        #f87171;
 
-  /* Borders & inputs */
-  --border:            rgba(255,255,255,0.09);
-  --input:             rgba(255,255,255,0.07);
-  --ring:              rgba(255,86,0,0.5);
+  /* --- Borders & inputs --- */
+  --border:             rgba(255,255,255,0.08);
+  --input:              rgba(255,255,255,0.06);
+  --ring:               rgba(249,115,22,0.45);
 
-  /* Border radius — Intercom sharp geometry */
-  --radius: 0.375rem;
+  /* --- Radius: rounded, friendly --- */
+  --radius: 0.75rem;
 
-  /* Charts */
-  --chart-1: #ff5600;
-  --chart-2: #65b5ff;
-  --chart-3: #0bdf50;
-  --chart-4: #ff2067;
-  --chart-5: #b3e01c;
+  /* --- Charts: warm sunlight palette --- */
+  --chart-1: #f97316;
+  --chart-2: #fbbf24;
+  --chart-3: #60a5fa;
+  --chart-4: #34d399;
+  --chart-5: #f472b6;
 
-  /* Sidebar */
-  --sidebar:                    rgba(255,255,255,0.025);
-  --sidebar-foreground:         rgba(255,255,255,0.85);
-  --sidebar-primary:            #ff5600;
+  /* --- Sidebar --- */
+  --sidebar:                    rgba(255,255,255,0.02);
+  --sidebar-foreground:         rgba(255,255,255,0.80);
+  --sidebar-primary:            #f97316;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             rgba(255,255,255,0.07);
-  --sidebar-accent-foreground:  rgba(255,255,255,0.9);
-  --sidebar-border:             rgba(255,255,255,0.07);
-  --sidebar-ring:               rgba(255,86,0,0.4);
+  --sidebar-accent:             rgba(255,255,255,0.06);
+  --sidebar-accent-foreground:  rgba(255,255,255,0.90);
+  --sidebar-border:             rgba(255,255,255,0.06);
+  --sidebar-ring:               rgba(249,115,22,0.4);
 }
 
 /* ============================================================
-   GLASSMORPHISM UTILITIES
+   BACKGROUNDS
    ============================================================ */
-.glass {
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.09);
-}
 
-.glass-strong {
-  background: rgba(255,255,255,0.07);
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border: 1px solid rgba(255,255,255,0.12);
-}
-
-.glass-popover {
-  background: rgba(12,12,22,0.88);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-/* Glow accent — orange */
-.glow-orange {
-  box-shadow: 0 0 24px rgba(255,86,0,0.25), 0 0 60px rgba(255,86,0,0.08);
-}
-
-/* Ambient background mesh */
-.bg-mesh {
+/* Page-level: dark grayscale + sunlight from top-right */
+.bg-app {
   background:
-    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(255,86,0,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(101,101,255,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 60% at 60% 10%, rgba(255,32,103,0.04) 0%, transparent 60%),
-    #07070f;
+    /* Sunlight cone from top-right */
+    radial-gradient(ellipse 70% 55% at 100% 0%,   rgba(251,191,36,0.13)  0%, transparent 55%),
+    radial-gradient(ellipse 45% 40% at 90%  0%,   rgba(249,115,22,0.10)  0%, transparent 45%),
+    radial-gradient(ellipse 30% 25% at 100% 5%,   rgba(255,200,80,0.07)  0%, transparent 40%),
+    /* Ambient floor glow */
+    radial-gradient(ellipse 60% 30% at 50% 100%,  rgba(100,100,100,0.04) 0%, transparent 60%),
+    #0c0c0c;
 }
 
+/* Card sunlight shimmer (subtle warm edge on top-right) */
+.card-sun {
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.055) 0%,
+      rgba(255,255,255,0.03)  40%,
+      rgba(255,180,60,0.04)   80%,
+      rgba(255,150,30,0.02)   100%
+    );
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-top-color: rgba(255,255,255,0.14);
+  border-right-color: rgba(255,180,60,0.12);
+}
+
+/* Stronger card (modals, popovers) */
+.glass-popover {
+  background: rgba(18,18,18,0.94);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* Sidebar glass */
+.sidebar-glass {
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.028) 0%,
+      rgba(255,255,255,0.018) 100%
+    );
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Glow: orange accent */
+.glow-primary {
+  box-shadow:
+    0 0 20px rgba(249,115,22,0.20),
+    0 0 60px rgba(249,115,22,0.06);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Headings — Intercom tight tracking */
-  h1 { letter-spacing: -0.03em; }
-  h2 { letter-spacing: -0.025em; }
-  h3 { letter-spacing: -0.02em; }
+  html {
+    font-family: var(--font-google-sans), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Google Sans heading rhythm */
+  h1 { font-weight: 500; letter-spacing: -0.030em; line-height: 1.15; }
+  h2 { font-weight: 500; letter-spacing: -0.025em; line-height: 1.20; }
+  h3 { font-weight: 500; letter-spacing: -0.018em; line-height: 1.25; }
+  h4 { font-weight: 500; letter-spacing: -0.012em; }
 }
 
 /* ============================================================
-   SCROLLBAR — minimal dark
+   SCROLLBAR
    ============================================================ */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar              { width: 4px; height: 4px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: rgba(255,255,255,0.10); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(255,255,255,0.18); }
