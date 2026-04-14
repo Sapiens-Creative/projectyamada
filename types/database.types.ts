@@ -275,6 +275,44 @@ export type Database = {
           updated_at?: string
         }
       }
+      notifications: {
+        Row: {
+          id: string
+          workspace_id: string
+          user_id: string
+          type: string
+          title: string
+          message: string | null
+          read: boolean
+          entity_type: string | null
+          entity_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          user_id: string
+          type: string
+          title: string
+          message?: string | null
+          read?: boolean
+          entity_type?: string | null
+          entity_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          message?: string | null
+          read?: boolean
+          entity_type?: string | null
+          entity_id?: string | null
+          created_at?: string
+        }
+      }
       assets: {
         Row: {
           id: string

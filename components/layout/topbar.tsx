@@ -1,5 +1,8 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { LogOut, Settings, User } from 'lucide-react'
 import { signOut } from '@/lib/actions/auth.actions'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
@@ -13,9 +16,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useWorkspace } from '@/providers/workspace-provider'
 import { getInitials } from '@/lib/utils'
-import { LogOut, Settings } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { GlobalSearch } from '@/components/search/global-search'
+import { NotificationBell } from '@/components/notifications/notification-bell'
 
 export function Topbar() {
   const { profile, workspace } = useWorkspace()
@@ -25,7 +27,13 @@ export function Topbar() {
     <header className="flex h-14 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="h-4" />
+
+      <GlobalSearch workspaceId={workspace.id} workspaceSlug={workspace.slug} />
+
       <div className="flex-1" />
+
+      <NotificationBell workspaceId={workspace.id} />
+
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1 hover:bg-muted outline-none">
           <Avatar className="h-7 w-7">
@@ -41,16 +49,16 @@ export function Topbar() {
             <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
           </div>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => router.push(`/${workspace.slug}/profile`)}>
+            <User className="h-4 w-4 mr-2" />
+            Meu perfil
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push(`/${workspace.slug}/settings`)}>
             <Settings className="h-4 w-4 mr-2" />
             Configurações
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={async () => {
-              await signOut()
-            }}
-          >
+          <DropdownMenuItem onClick={async () => { await signOut() }}>
             <LogOut className="h-4 w-4 mr-2" />
             Sair
           </DropdownMenuItem>
