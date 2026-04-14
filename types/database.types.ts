@@ -300,6 +300,9 @@ export type Database = {
           due_date: string | null
           paid_at: string | null
           notes: string | null
+          is_recurring: boolean
+          recurrence: 'monthly' | 'quarterly' | 'annual' | null
+          next_due_date: string | null
           created_by: string | null
           created_at: string
           updated_at: string
@@ -316,6 +319,9 @@ export type Database = {
           due_date?: string | null
           paid_at?: string | null
           notes?: string | null
+          is_recurring?: boolean
+          recurrence?: 'monthly' | 'quarterly' | 'annual' | null
+          next_due_date?: string | null
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -332,6 +338,9 @@ export type Database = {
           due_date?: string | null
           paid_at?: string | null
           notes?: string | null
+          is_recurring?: boolean
+          recurrence?: 'monthly' | 'quarterly' | 'annual' | null
+          next_due_date?: string | null
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -629,6 +638,79 @@ export type Database = {
           notes?: string | null
           created_at?: string
           updated_at?: string
+        }
+      }
+      time_entries: {
+        Row: {
+          id: string
+          workspace_id: string
+          project_id: string | null
+          task_id: string | null
+          user_id: string
+          description: string | null
+          hours: number
+          hourly_rate: number | null
+          date: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          project_id?: string | null
+          task_id?: string | null
+          user_id: string
+          description?: string | null
+          hours: number
+          hourly_rate?: number | null
+          date?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          project_id?: string | null
+          task_id?: string | null
+          user_id?: string
+          description?: string | null
+          hours?: number
+          hourly_rate?: number | null
+          date?: string
+          created_at?: string
+        }
+      }
+      campaign_costs: {
+        Row: {
+          id: string
+          workspace_id: string
+          project_id: string
+          category: 'media' | 'production' | 'tools' | 'freelancer' | 'other'
+          description: string
+          amount: number
+          date: string
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          project_id: string
+          category: 'media' | 'production' | 'tools' | 'freelancer' | 'other'
+          description: string
+          amount: number
+          date?: string
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          project_id?: string
+          category?: 'media' | 'production' | 'tools' | 'freelancer' | 'other'
+          description?: string
+          amount?: number
+          date?: string
+          created_by?: string | null
+          created_at?: string
         }
       }
       tasks: {

@@ -5,14 +5,20 @@ import { createClient as createSupabaseClient } from '@/lib/supabase/server'
 import type { ActionResult, Invoice, InvoiceWithClient, InvoiceStatus } from '@/types/app.types'
 import { createInvoiceSchema, updateInvoiceSchema } from '@/lib/validations/invoice.schema'
 
-export async function getInvoices(workspaceId: string): Promise<ActionResult<InvoiceWithClient[]>> {
+export async function getInvoices(workspaceId: string, projectId?: string): Promise<ActionResult<InvoiceWithClient[]>> {
   const supabase = await createSupabaseClient()
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('invoices')
     .select('*, clients(id, name, slug), projects(id, name, slug)')
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
+
+  if (projectId) {
+    query = query.eq('project_id', projectId)
+  }
+
+  const { data, error } = await query
 
   if (error) return { data: null, error: (error as { message: string }).message, success: false }
   return { data: data as InvoiceWithClient[], error: null, success: true }

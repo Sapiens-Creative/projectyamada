@@ -5,11 +5,13 @@ import { getProject } from '@/lib/actions/project.actions'
 import { getClients } from '@/lib/actions/client.actions'
 import { getTeamMembers } from '@/lib/actions/team.actions'
 import { getBrief } from '@/lib/actions/brief.actions'
-import type { Workspace, ProjectWithClient, Client, TaskWithAssignee, WorkspaceMemberWithProfile, CampaignBrief, Asset } from '@/types/app.types'
-import { Badge } from '@/components/ui/badge'
+import { getInvoices } from '@/lib/actions/invoice.actions'
+import { getTimeEntries } from '@/lib/actions/timesheet.actions'
+import { getCampaignCosts } from '@/lib/actions/campaign-cost.actions'
+import type { Workspace, ProjectWithClient, Client, TaskWithAssignee, WorkspaceMemberWithProfile, CampaignBrief, Asset, InvoiceWithClient, TimeEntryWithUser, CampaignCost } from '@/types/app.types'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Building2, Calendar, DollarSign } from 'lucide-react'
+import { ArrowLeft, Building2, Calendar, DollarSign, Layers } from 'lucide-react'
 import { EditProjectSheet } from '@/components/projects/edit-project-sheet'
 import { ProjectTaskList } from '@/components/projects/project-task-list'
 import { NewTaskSheet } from '@/components/tasks/new-task-sheet'
@@ -17,7 +19,11 @@ import { CampaignBriefTab } from '@/components/projects/campaign-brief-tab'
 import { ProjectTimeline } from '@/components/projects/project-timeline'
 import { AssetApprovalActions } from '@/components/assets/asset-approval-actions'
 import { EmptyState } from '@/components/shared/empty-state'
-import { Layers } from 'lucide-react'
+import { TimesheetList } from '@/components/financial/timesheet-list'
+import { NewTimeEntrySheet } from '@/components/financial/new-time-entry-sheet'
+import { CampaignCostsList } from '@/components/financial/campaign-costs-list'
+import { NewCampaignCostSheet } from '@/components/financial/new-campaign-cost-sheet'
+import { ProfitabilityCard } from '@/components/financial/profitability-card'
 
 const STATUS_LABELS: Record<string, string> = {
   planning: 'Planejamento', active: 'Ativo', paused: 'Pausado',
@@ -43,7 +49,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   if (!workspaceRaw) notFound()
   const workspace = workspaceRaw as Workspace
 
-  const [projectResult, clientsResult, membersResult, briefResult, { data: tasksRaw }, { data: assetsRaw }] = await Promise.all([
+  const [projectResult, clientsResult, membersResult, briefResult, { data: tasksRaw }, { data: assetsRaw }, invoicesResult, entriesResult, costsResult] = await Promise.all([
     getProject(projectId),
     getClients(workspace.id),
     getTeamMembers(workspace.id),
@@ -58,6 +64,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       .select('*')
       .eq('project_id', projectId)
       .order('created_at', { ascending: false }),
+    getInvoices(workspace.id, projectId),
+    getTimeEntries(workspace.id, projectId),
+    getCampaignCosts(workspace.id, projectId),
   ])
 
   if (!projectResult.data) notFound()
@@ -67,6 +76,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const tasks = (tasksRaw ?? []) as TaskWithAssignee[]
   const brief = briefResult.data as CampaignBrief | null
   const assets = (assetsRaw ?? []) as Asset[]
+  const projectInvoices = (invoicesResult.data ?? []) as InvoiceWithClient[]
+  const timeEntries = (entriesResult.data ?? []) as TimeEntryWithUser[]
+  const campaignCosts = (costsResult.data ?? []) as CampaignCost[]
 
   return (
     <div className="space-y-6">
@@ -144,6 +156,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <TabsTrigger value="brief">Brief{brief ? ' ✓' : ''}</TabsTrigger>
           <TabsTrigger value="timeline">Cronograma</TabsTrigger>
           <TabsTrigger value="assets">Assets ({assets.length})</TabsTrigger>
+          <TabsTrigger value="financial">Financeiro</TabsTrigger>
         </TabsList>
 
         {/* TAREFAS */}
@@ -214,6 +227,41 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               ))}
             </div>
           )}
+        </TabsContent>
+        {/* FINANCEIRO */}
+        <TabsContent value="financial" className="pt-4 space-y-6">
+          <ProfitabilityCard
+            invoices={projectInvoices}
+            timeEntries={timeEntries}
+            costs={campaignCosts}
+            projectName={project.name}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-white/60">Horas</h3>
+                <NewTimeEntrySheet
+                  workspaceId={workspace.id}
+                  workspaceSlug={workspaceSlug}
+                  projects={[project]}
+                  defaultProjectId={project.id}
+                />
+              </div>
+              <TimesheetList entries={timeEntries} workspaceSlug={workspaceSlug} />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-white/60">Custos</h3>
+                <NewCampaignCostSheet
+                  workspaceId={workspace.id}
+                  workspaceSlug={workspaceSlug}
+                  projects={[project]}
+                  defaultProjectId={project.id}
+                />
+              </div>
+              <CampaignCostsList costs={campaignCosts} workspaceSlug={workspaceSlug} />
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

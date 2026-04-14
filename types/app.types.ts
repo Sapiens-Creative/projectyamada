@@ -82,3 +82,11 @@ export type ProposalWithRefs = Proposal & {
 }
 
 export type CampaignBrief = Database['public']['Tables']['campaign_briefs']['Row']
+
+export type TimeEntry = Database['public']['Tables']['time_entries']['Row']
+export type TimeEntryWithUser = TimeEntry & {
+  profiles: Pick<Profile, 'id' | 'full_name' | 'avatar_url'>
+}
+
+export type CampaignCost = Database['public']['Tables']['campaign_costs']['Row']
+export type CampaignCostCategory = CampaignCost['category']
