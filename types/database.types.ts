@@ -225,6 +225,97 @@ export type Database = {
           updated_at?: string
         }
       }
+      invoices: {
+        Row: {
+          id: string
+          workspace_id: string
+          client_id: string
+          project_id: string | null
+          number: string
+          title: string
+          status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+          amount: number
+          due_date: string | null
+          paid_at: string | null
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          client_id: string
+          project_id?: string | null
+          number: string
+          title: string
+          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+          amount?: number
+          due_date?: string | null
+          paid_at?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          client_id?: string
+          project_id?: string | null
+          number?: string
+          title?: string
+          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+          amount?: number
+          due_date?: string | null
+          paid_at?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      assets: {
+        Row: {
+          id: string
+          workspace_id: string
+          client_id: string | null
+          name: string
+          file_url: string
+          storage_path: string
+          file_type: string
+          size: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          client_id?: string | null
+          name: string
+          file_url: string
+          storage_path: string
+          file_type: string
+          size?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          client_id?: string | null
+          name?: string
+          file_url?: string
+          storage_path?: string
+          file_type?: string
+          size?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       tasks: {
         Row: {
           id: string
@@ -292,6 +383,7 @@ export type Database = {
       project_status: 'planning' | 'active' | 'paused' | 'completed' | 'cancelled'
       task_status: 'backlog' | 'todo' | 'in_progress' | 'in_review' | 'done'
       task_priority: 'low' | 'medium' | 'high' | 'urgent'
+      invoice_status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
     }
   }
 }

@@ -36,6 +36,20 @@ export type TaskWithAssignee = Task & {
   assignee: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null
 }
 
+export type Invoice = Database['public']['Tables']['invoices']['Row']
+export type InvoiceStatus = Database['public']['Enums']['invoice_status']
+
+export type InvoiceWithClient = Invoice & {
+  clients: Pick<Client, 'id' | 'name' | 'slug'> | null
+  projects: Pick<Project, 'id' | 'name' | 'slug'> | null
+}
+
+export type Asset = Database['public']['Tables']['assets']['Row']
+
+export type AssetWithClient = Asset & {
+  clients: Pick<Client, 'id' | 'name' | 'slug'> | null
+}
+
 export type WorkspaceMemberWithProfile = WorkspaceMember & {
   profiles: Profile
 }

@@ -44,7 +44,7 @@ const NAV_ITEMS = [
   { label: 'Projetos', href: '/projects', icon: 'FolderKanban', soon: false },
   { label: 'Tarefas', href: '/tasks', icon: 'CheckSquare', soon: false },
   { label: 'Financeiro', href: '/financial', icon: 'DollarSign', soon: false },
-  { label: 'Assets', href: '/assets', icon: 'Layers', soon: true },
+  { label: 'Assets', href: '/assets', icon: 'Layers', soon: false },
   { label: 'Equipe', href: '/team', icon: 'Users', soon: false },
   { label: 'Relatórios', href: '/reports', icon: 'BarChart3', soon: false },
 ]
