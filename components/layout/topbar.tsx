@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { LogOut, Settings, User } from 'lucide-react'
 import { signOut } from '@/lib/actions/auth.actions'
@@ -24,9 +23,9 @@ export function Topbar() {
   const router = useRouter()
 
   return (
-    <header className="flex h-14 items-center gap-2 border-b px-4">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="h-4" />
+    <header className="flex h-13 items-center gap-2 border-b border-white/[0.07] px-4 glass-popover backdrop-blur-xl">
+      <SidebarTrigger className="-ml-1 text-white/50 hover:text-white/80" />
+      <Separator orientation="vertical" className="h-4 bg-white/10" />
 
       <GlobalSearch workspaceId={workspace.id} workspaceSlug={workspace.slug} />
 
@@ -35,30 +34,42 @@ export function Topbar() {
       <NotificationBell workspaceId={workspace.id} />
 
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1 hover:bg-muted outline-none">
-          <Avatar className="h-7 w-7">
+        <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1.5 hover:bg-white/[0.06] outline-none transition-colors">
+          <Avatar className="h-7 w-7 ring-1 ring-white/10">
             <AvatarImage src={profile.avatar_url ?? undefined} />
-            <AvatarFallback className="text-xs">
+            <AvatarFallback className="text-xs bg-[#ff5600]/20 text-[#ff5600] font-semibold">
               {getInitials(profile.full_name ?? profile.email)}
             </AvatarFallback>
           </Avatar>
+          <span className="text-sm text-white/70 hidden sm:block max-w-28 truncate">
+            {profile.full_name ?? profile.email}
+          </span>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <div className="px-2 py-1.5">
-            <p className="text-sm font-medium truncate">{profile.full_name ?? profile.email}</p>
-            <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
+        <DropdownMenuContent align="end" className="w-52 glass-popover border-white/10">
+          <div className="px-2 py-2">
+            <p className="text-sm font-medium text-white/90 truncate">{profile.full_name ?? profile.email}</p>
+            <p className="text-xs text-white/40 truncate">{profile.email}</p>
           </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push(`/${workspace.slug}/profile`)}>
+          <DropdownMenuSeparator className="bg-white/08" />
+          <DropdownMenuItem
+            onClick={() => router.push(`/${workspace.slug}/profile`)}
+            className="text-white/70 hover:text-white focus:text-white"
+          >
             <User className="h-4 w-4 mr-2" />
             Meu perfil
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push(`/${workspace.slug}/settings`)}>
+          <DropdownMenuItem
+            onClick={() => router.push(`/${workspace.slug}/settings`)}
+            className="text-white/70 hover:text-white focus:text-white"
+          >
             <Settings className="h-4 w-4 mr-2" />
             Configurações
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={async () => { await signOut() }}>
+          <DropdownMenuSeparator className="bg-white/08" />
+          <DropdownMenuItem
+            onClick={async () => { await signOut() }}
+            className="text-white/50 hover:text-white focus:text-white"
+          >
             <LogOut className="h-4 w-4 mr-2" />
             Sair
           </DropdownMenuItem>

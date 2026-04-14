@@ -57,11 +57,11 @@ export default async function DashboardLayout({
   return (
     <WorkspaceProvider workspace={workspace} profile={profile} allWorkspaces={allWorkspaces}>
       <SidebarProvider>
-        <div className="flex min-h-screen w-full">
+        <div className="flex min-h-screen w-full bg-mesh">
           <AppSidebar workspaceSlug={workspaceSlug} />
           <div className="flex flex-col flex-1 min-w-0">
             <Topbar />
-            <main className="flex-1 p-6">{children}</main>
+            <main className="flex-1 p-6 max-w-screen-2xl">{children}</main>
           </div>
         </div>
       </SidebarProvider>
