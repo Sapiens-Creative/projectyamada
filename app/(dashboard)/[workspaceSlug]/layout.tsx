@@ -46,8 +46,16 @@ export default async function DashboardLayout({
 
   if (!member) redirect('/create-workspace')
 
+  const { data: allMemberships } = await supabase
+    .from('workspace_members')
+    .select('workspaces(*)')
+    .eq('user_id', user.id)
+    .order('joined_at', { ascending: true })
+
+  const allWorkspaces = ((allMemberships ?? []) as unknown as { workspaces: Workspace }[]).map((m) => m.workspaces)
+
   return (
-    <WorkspaceProvider workspace={workspace} profile={profile}>
+    <WorkspaceProvider workspace={workspace} profile={profile} allWorkspaces={allWorkspaces}>
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <AppSidebar workspaceSlug={workspaceSlug} />

@@ -6,6 +6,7 @@ import type { Workspace, Profile } from '@/types/app.types'
 interface WorkspaceContextValue {
   workspace: Workspace
   profile: Profile
+  allWorkspaces: Workspace[]
 }
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null)
@@ -14,13 +15,15 @@ export function WorkspaceProvider({
   children,
   workspace,
   profile,
+  allWorkspaces,
 }: {
   children: React.ReactNode
   workspace: Workspace
   profile: Profile
+  allWorkspaces: Workspace[]
 }) {
   return (
-    <WorkspaceContext.Provider value={{ workspace, profile }}>
+    <WorkspaceContext.Provider value={{ workspace, profile, allWorkspaces }}>
       {children}
     </WorkspaceContext.Provider>
   )

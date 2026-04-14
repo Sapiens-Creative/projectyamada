@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getTeamMembers } from '@/lib/actions/team.actions'
-import type { Workspace, WorkspaceMemberWithProfile } from '@/types/app.types'
+import { getWorkspaceInvites } from '@/lib/actions/invite.actions'
+import { InviteForm } from '@/components/team/invite-form'
+import type { Workspace, WorkspaceMemberWithProfile, WorkspaceInvite } from '@/types/app.types'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -42,8 +44,12 @@ export default async function TeamPage({ params }: PageProps) {
   const { data: sessionData } = await supabase.auth.getUser()
   const currentUserId = sessionData.user?.id
 
-  const result = await getTeamMembers(workspace.id)
-  const members = (result.data ?? []) as WorkspaceMemberWithProfile[]
+  const [teamResult, invitesResult] = await Promise.all([
+    getTeamMembers(workspace.id),
+    getWorkspaceInvites(workspace.id),
+  ])
+  const members = (teamResult.data ?? []) as WorkspaceMemberWithProfile[]
+  const pendingInvites = (invitesResult.data ?? []) as WorkspaceInvite[]
 
   const currentMember = members.find((m) => m.user_id === currentUserId)
   const canManage = currentMember?.role === 'owner' || currentMember?.role === 'admin'
@@ -89,11 +95,13 @@ export default async function TeamPage({ params }: PageProps) {
         ))}
       </div>
 
-      <div className="rounded-lg border border-dashed p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          Convite por e-mail em desenvolvimento. Por enquanto, membros entram via link de workspace.
-        </p>
-      </div>
+      {canManage && (
+        <InviteForm
+          workspaceId={workspace.id}
+          workspaceSlug={workspaceSlug}
+          pendingInvites={pendingInvites}
+        />
+      )}
     </div>
   )
 }

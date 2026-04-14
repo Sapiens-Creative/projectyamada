@@ -23,9 +23,7 @@ import {
   SidebarHeader,
 } from '@/components/ui/sidebar'
 import { Badge } from '@/components/ui/badge'
-import { useWorkspace } from '@/providers/workspace-provider'
-import { getInitials } from '@/lib/utils'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { WorkspaceSwitcher } from '@/components/layout/workspace-switcher'
 
 const icons = {
   LayoutDashboard,
@@ -51,17 +49,11 @@ const NAV_ITEMS = [
 
 export function AppSidebar({ workspaceSlug }: { workspaceSlug: string }) {
   const pathname = usePathname()
-  const { workspace } = useWorkspace()
 
   return (
     <Sidebar>
-      <SidebarHeader className="px-4 py-3 border-b">
-        <div className="flex items-center gap-2">
-          <Avatar className="h-7 w-7">
-            <AvatarFallback className="text-xs">{getInitials(workspace.name)}</AvatarFallback>
-          </Avatar>
-          <span className="font-semibold text-sm truncate">{workspace.name}</span>
-        </div>
+      <SidebarHeader className="px-2 py-2 border-b">
+        <WorkspaceSwitcher />
       </SidebarHeader>
 
       <SidebarContent>

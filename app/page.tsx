@@ -9,13 +9,14 @@ export default async function RootPage() {
 
   const { data } = await supabase
     .from('workspace_members')
-    .select('workspace_id, workspaces(slug)')
+    .select('workspaces(slug)')
     .eq('user_id', user.id)
-    .limit(1)
-    .single()
+    .order('joined_at', { ascending: true })
 
-  const slug = (data as { workspaces: { slug: string } | null } | null)?.workspaces?.slug
-  if (slug) redirect(`/${slug}`)
+  const memberships = (data ?? []) as unknown as { workspaces: { slug: string } }[]
 
-  redirect('/create-workspace')
+  if (memberships.length === 0) redirect('/create-workspace')
+  if (memberships.length === 1) redirect(`/${memberships[0].workspaces.slug}`)
+
+  redirect('/workspaces')
 }

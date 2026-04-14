@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Dashboard routes: redirect to login if not logged in
-  const publicPaths = ['/login', '/register', '/forgot-password', '/auth/callback']
+  const publicPaths = ['/login', '/register', '/forgot-password', '/auth/callback', '/invite']
   const isPublic = publicPaths.some((p) => pathname.startsWith(p))
 
   if (!user && !isPublic) {
