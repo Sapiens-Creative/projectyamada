@@ -275,6 +275,41 @@ export type Database = {
           updated_at?: string
         }
       }
+      workspace_invites: {
+        Row: {
+          id: string
+          workspace_id: string
+          email: string
+          role: 'owner' | 'admin' | 'member' | 'viewer'
+          token: string
+          invited_by: string | null
+          expires_at: string
+          used_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          email: string
+          role?: 'owner' | 'admin' | 'member' | 'viewer'
+          token?: string
+          invited_by?: string | null
+          expires_at?: string
+          used_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          email?: string
+          role?: 'owner' | 'admin' | 'member' | 'viewer'
+          token?: string
+          invited_by?: string | null
+          expires_at?: string
+          used_at?: string | null
+          created_at?: string
+        }
+      }
       notifications: {
         Row: {
           id: string

@@ -44,6 +44,7 @@ export type InvoiceWithClient = Invoice & {
   projects: Pick<Project, 'id' | 'name' | 'slug'> | null
 }
 
+export type WorkspaceInvite = Database['public']['Tables']['workspace_invites']['Row']
 export type Notification = Database['public']['Tables']['notifications']['Row']
 
 export type Asset = Database['public']['Tables']['assets']['Row']
