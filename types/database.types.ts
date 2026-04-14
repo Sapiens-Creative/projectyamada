@@ -415,11 +415,18 @@ export type Database = {
           id: string
           workspace_id: string
           client_id: string | null
+          project_id: string | null
           name: string
           file_url: string
           storage_path: string
           file_type: string
           size: number
+          version: number
+          parent_asset_id: string | null
+          approval_status: 'pending' | 'approved' | 'rejected'
+          approval_flow: 'internal_only' | 'client_required' | 'auto_approve'
+          approved_by: string | null
+          approved_at: string | null
           created_by: string | null
           created_at: string
           updated_at: string
@@ -428,11 +435,18 @@ export type Database = {
           id?: string
           workspace_id: string
           client_id?: string | null
+          project_id?: string | null
           name: string
           file_url: string
           storage_path: string
           file_type: string
           size?: number
+          version?: number
+          parent_asset_id?: string | null
+          approval_status?: 'pending' | 'approved' | 'rejected'
+          approval_flow?: 'internal_only' | 'client_required' | 'auto_approve'
+          approved_by?: string | null
+          approved_at?: string | null
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -441,12 +455,178 @@ export type Database = {
           id?: string
           workspace_id?: string
           client_id?: string | null
+          project_id?: string | null
           name?: string
           file_url?: string
           storage_path?: string
           file_type?: string
           size?: number
+          version?: number
+          parent_asset_id?: string | null
+          approval_status?: 'pending' | 'approved' | 'rejected'
+          approval_flow?: 'internal_only' | 'client_required' | 'auto_approve'
+          approved_by?: string | null
+          approved_at?: string | null
           created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      leads: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string
+          contact_name: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          source: 'site' | 'landing_page' | 'referral' | 'linkedin' | 'facebook' | 'event' | 'cold' | 'other' | null
+          stage: 'new' | 'contacted' | 'proposal' | 'negotiation' | 'won' | 'lost'
+          score: number
+          estimated_value: number | null
+          lost_reason: string | null
+          notes: string | null
+          assigned_to: string | null
+          converted_client_id: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name: string
+          contact_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          source?: 'site' | 'landing_page' | 'referral' | 'linkedin' | 'facebook' | 'event' | 'cold' | 'other' | null
+          stage?: 'new' | 'contacted' | 'proposal' | 'negotiation' | 'won' | 'lost'
+          score?: number
+          estimated_value?: number | null
+          lost_reason?: string | null
+          notes?: string | null
+          assigned_to?: string | null
+          converted_client_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string
+          contact_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          source?: 'site' | 'landing_page' | 'referral' | 'linkedin' | 'facebook' | 'event' | 'cold' | 'other' | null
+          stage?: 'new' | 'contacted' | 'proposal' | 'negotiation' | 'won' | 'lost'
+          score?: number
+          estimated_value?: number | null
+          lost_reason?: string | null
+          notes?: string | null
+          assigned_to?: string | null
+          converted_client_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      proposals: {
+        Row: {
+          id: string
+          workspace_id: string
+          lead_id: string | null
+          client_id: string | null
+          title: string
+          status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
+          valid_until: string | null
+          total_value: number | null
+          content: unknown
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          lead_id?: string | null
+          client_id?: string | null
+          title: string
+          status?: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
+          valid_until?: string | null
+          total_value?: number | null
+          content?: unknown
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          lead_id?: string | null
+          client_id?: string | null
+          title?: string
+          status?: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
+          valid_until?: string | null
+          total_value?: number | null
+          content?: unknown
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      campaign_briefs: {
+        Row: {
+          id: string
+          project_id: string
+          workspace_id: string
+          objective: string | null
+          target_audience: string | null
+          channels: string[]
+          kpis: unknown
+          budget_total: number | null
+          budget_media: number | null
+          start_date: string | null
+          end_date: string | null
+          strategy: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          workspace_id: string
+          objective?: string | null
+          target_audience?: string | null
+          channels?: string[]
+          kpis?: unknown
+          budget_total?: number | null
+          budget_media?: number | null
+          start_date?: string | null
+          end_date?: string | null
+          strategy?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          workspace_id?: string
+          objective?: string | null
+          target_audience?: string | null
+          channels?: string[]
+          kpis?: unknown
+          budget_total?: number | null
+          budget_media?: number | null
+          start_date?: string | null
+          end_date?: string | null
+          strategy?: string | null
+          notes?: string | null
           created_at?: string
           updated_at?: string
         }

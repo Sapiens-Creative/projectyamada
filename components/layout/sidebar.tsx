@@ -11,6 +11,8 @@ import {
   Layers,
   Users,
   BarChart3,
+  TrendingUp,
+  FileText,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -34,17 +36,21 @@ const icons = {
   Layers,
   Users,
   BarChart3,
+  TrendingUp,
+  FileText,
 }
 
 const NAV_ITEMS = [
-  { label: 'Dashboard',  href: '',          icon: 'LayoutDashboard', soon: false },
-  { label: 'Clientes',   href: '/clients',  icon: 'Building2',       soon: false },
-  { label: 'Projetos',   href: '/projects', icon: 'FolderKanban',    soon: false },
-  { label: 'Tarefas',    href: '/tasks',    icon: 'CheckSquare',     soon: false },
-  { label: 'Financeiro', href: '/financial',icon: 'DollarSign',      soon: false },
-  { label: 'Assets',     href: '/assets',   icon: 'Layers',          soon: false },
-  { label: 'Equipe',     href: '/team',     icon: 'Users',           soon: false },
-  { label: 'Relatórios', href: '/reports',  icon: 'BarChart3',       soon: false },
+  { label: 'Dashboard',  href: '',           icon: 'LayoutDashboard', soon: false },
+  { label: 'Clientes',   href: '/clients',   icon: 'Building2',       soon: false },
+  { label: 'Pipeline',   href: '/pipeline',  icon: 'TrendingUp',      soon: false },
+  { label: 'Propostas',  href: '/proposals', icon: 'FileText',        soon: false },
+  { label: 'Projetos',   href: '/projects',  icon: 'FolderKanban',    soon: false },
+  { label: 'Tarefas',    href: '/tasks',     icon: 'CheckSquare',     soon: false },
+  { label: 'Financeiro', href: '/financial', icon: 'DollarSign',      soon: false },
+  { label: 'Assets',     href: '/assets',    icon: 'Layers',          soon: false },
+  { label: 'Equipe',     href: '/team',      icon: 'Users',           soon: false },
+  { label: 'Relatórios', href: '/reports',   icon: 'BarChart3',       soon: false },
 ]
 
 export function AppSidebar({ workspaceSlug }: { workspaceSlug: string }) {

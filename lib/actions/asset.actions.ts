@@ -76,6 +76,31 @@ export async function uploadAssetAction(
   return { data: data as Asset, error: null, success: true }
 }
 
+export async function approveAssetAction(
+  assetId: string,
+  status: 'approved' | 'rejected',
+  workspaceSlug: string
+): Promise<ActionResult<Asset>> {
+  const supabase = await createSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data, error } = await supabase
+    .from('assets')
+    .update({
+      approval_status: status,
+      approved_by: status === 'approved' ? user?.id : null,
+      approved_at: status === 'approved' ? new Date().toISOString() : null,
+    })
+    .eq('id', assetId)
+    .select()
+    .single()
+
+  if (error) return { data: null, error: (error as { message: string }).message, success: false }
+
+  revalidatePath(`/${workspaceSlug}/assets`)
+  return { data: data as Asset, error: null, success: true }
+}
+
 export async function deleteAssetAction(
   assetId: string,
   storagePath: string,

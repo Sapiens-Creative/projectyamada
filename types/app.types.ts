@@ -64,3 +64,21 @@ export type ClientWithInteractions = Client & {
   client_contacts: ClientContact[]
   client_interactions: ClientInteraction[]
 }
+
+export type Lead = Database['public']['Tables']['leads']['Row']
+export type LeadStage = Lead['stage']
+export type LeadSource = Lead['source']
+
+export type LeadWithAssignee = Lead & {
+  assignee: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null
+}
+
+export type Proposal = Database['public']['Tables']['proposals']['Row']
+export type ProposalStatus = Proposal['status']
+
+export type ProposalWithRefs = Proposal & {
+  leads: Pick<Lead, 'id' | 'name'> | null
+  clients: Pick<Client, 'id' | 'name' | 'slug'> | null
+}
+
+export type CampaignBrief = Database['public']['Tables']['campaign_briefs']['Row']

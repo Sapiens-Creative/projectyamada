@@ -4,30 +4,31 @@ import { createClient } from '@/lib/supabase/server'
 import { getProject } from '@/lib/actions/project.actions'
 import { getClients } from '@/lib/actions/client.actions'
 import { getTeamMembers } from '@/lib/actions/team.actions'
-import type { Workspace, ProjectWithClient, Client, TaskWithAssignee, WorkspaceMemberWithProfile } from '@/types/app.types'
+import { getBrief } from '@/lib/actions/brief.actions'
+import type { Workspace, ProjectWithClient, Client, TaskWithAssignee, WorkspaceMemberWithProfile, CampaignBrief, Asset } from '@/types/app.types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Calendar, DollarSign, Building2 } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ArrowLeft, Building2, Calendar, DollarSign } from 'lucide-react'
 import { EditProjectSheet } from '@/components/projects/edit-project-sheet'
 import { ProjectTaskList } from '@/components/projects/project-task-list'
 import { NewTaskSheet } from '@/components/tasks/new-task-sheet'
+import { CampaignBriefTab } from '@/components/projects/campaign-brief-tab'
+import { ProjectTimeline } from '@/components/projects/project-timeline'
+import { AssetApprovalActions } from '@/components/assets/asset-approval-actions'
+import { EmptyState } from '@/components/shared/empty-state'
+import { Layers } from 'lucide-react'
 
 const STATUS_LABELS: Record<string, string> = {
-  planning: 'Planejamento',
-  active: 'Ativo',
-  paused: 'Pausado',
-  completed: 'Concluído',
-  cancelled: 'Cancelado',
+  planning: 'Planejamento', active: 'Ativo', paused: 'Pausado',
+  completed: 'Concluído', cancelled: 'Cancelado',
 }
-
 const STATUS_COLORS: Record<string, string> = {
-  planning: 'bg-blue-100 text-blue-800',
-  active: 'bg-green-100 text-green-800',
-  paused: 'bg-yellow-100 text-yellow-800',
-  completed: 'bg-gray-100 text-gray-800',
-  cancelled: 'bg-red-100 text-red-800',
+  planning: 'bg-blue-500/15 text-blue-400',
+  active: 'bg-emerald-500/15 text-emerald-400',
+  paused: 'bg-amber-500/15 text-amber-400',
+  completed: 'bg-white/[0.06] text-white/50',
+  cancelled: 'bg-red-500/15 text-red-400',
 }
 
 interface PageProps {
@@ -38,22 +39,23 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const { workspaceSlug, projectId } = await params
   const supabase = await createClient()
 
-  const { data: workspaceRaw } = await supabase
-    .from('workspaces')
-    .select('*')
-    .eq('slug', workspaceSlug)
-    .single()
-
+  const { data: workspaceRaw } = await supabase.from('workspaces').select('*').eq('slug', workspaceSlug).single()
   if (!workspaceRaw) notFound()
   const workspace = workspaceRaw as Workspace
 
-  const [projectResult, clientsResult, membersResult, { data: tasksRaw }] = await Promise.all([
+  const [projectResult, clientsResult, membersResult, briefResult, { data: tasksRaw }, { data: assetsRaw }] = await Promise.all([
     getProject(projectId),
     getClients(workspace.id),
     getTeamMembers(workspace.id),
+    getBrief(projectId),
     supabase
       .from('tasks')
       .select('*, assignee:profiles!tasks_assignee_id_fkey(id, full_name, avatar_url)')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('assets')
+      .select('*')
       .eq('project_id', projectId)
       .order('created_at', { ascending: false }),
   ])
@@ -63,108 +65,157 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const clients = (clientsResult.data ?? []) as Client[]
   const members = (membersResult.data ?? []) as WorkspaceMemberWithProfile[]
   const tasks = (tasksRaw ?? []) as TaskWithAssignee[]
+  const brief = briefResult.data as CampaignBrief | null
+  const assets = (assetsRaw ?? []) as Asset[]
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href={`/${workspaceSlug}/projects`}>
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Projetos
-          </Button>
-        </Link>
-      </div>
+      {/* Back nav */}
+      <Link href={`/${workspaceSlug}/projects`}>
+        <Button variant="ghost" size="sm" className="-ml-2">
+          <ArrowLeft className="h-4 w-4 mr-1" />Projetos
+        </Button>
+      </Link>
 
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-2xl font-bold">{project.name}</h1>
-            <Badge className={STATUS_COLORS[project.status]}>
+          <div className="flex items-center gap-3 mb-1 flex-wrap">
+            <h1 className="text-2xl font-semibold">{project.name}</h1>
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[project.status]}`}>
               {STATUS_LABELS[project.status]}
-            </Badge>
+            </span>
           </div>
           {project.clients && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Building2 className="h-3 w-3" />
-              <Link href={`/${workspaceSlug}/clients/${project.clients.id}`} className="hover:underline">
+            <div className="flex items-center gap-1 text-sm text-white/40">
+              <Building2 className="h-3.5 w-3.5" />
+              <Link href={`/${workspaceSlug}/clients/${project.clients.id}`} className="hover:text-white/70 transition-colors">
                 {project.clients.name}
               </Link>
             </div>
           )}
         </div>
-        <EditProjectSheet
-          project={project}
-          workspaceId={workspace.id}
-          workspaceSlug={workspaceSlug}
-          clients={clients}
-        />
+        <EditProjectSheet project={project} workspaceId={workspace.id} workspaceSlug={workspaceSlug} clients={clients} />
       </div>
 
-      <Separator />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {project.start_date && (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Calendar className="h-4 w-4" /> Início
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-semibold">{new Date(project.start_date).toLocaleDateString('pt-BR')}</p>
-            </CardContent>
-          </Card>
-        )}
-        {project.end_date && (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Calendar className="h-4 w-4" /> Prazo
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-semibold">{new Date(project.end_date).toLocaleDateString('pt-BR')}</p>
-            </CardContent>
-          </Card>
-        )}
-        {project.budget && (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <DollarSign className="h-4 w-4" /> Orçamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="font-semibold">R$ {project.budget.toLocaleString('pt-BR')}</p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {project.description && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Descrição</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{project.description}</p>
-          </CardContent>
-        </Card>
+      {/* KPI cards */}
+      {(project.start_date || project.end_date || project.budget) && (
+        <div className="flex gap-3 flex-wrap">
+          {project.start_date && (
+            <div className="card-sun rounded-xl px-4 py-3 flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-white/30" />
+              <div>
+                <p className="text-[10px] text-white/40">Início</p>
+                <p className="text-sm font-medium">{new Date(project.start_date).toLocaleDateString('pt-BR')}</p>
+              </div>
+            </div>
+          )}
+          {project.end_date && (
+            <div className="card-sun rounded-xl px-4 py-3 flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-amber-400" />
+              <div>
+                <p className="text-[10px] text-white/40">Prazo</p>
+                <p className="text-sm font-medium text-amber-400">{new Date(project.end_date).toLocaleDateString('pt-BR')}</p>
+              </div>
+            </div>
+          )}
+          {project.budget && (
+            <div className="card-sun rounded-xl px-4 py-3 flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-emerald-400" />
+              <div>
+                <p className="text-[10px] text-white/40">Orçamento</p>
+                <p className="text-sm font-medium text-emerald-400">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(project.budget)}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Tarefas ({tasks.length})</h2>
-          <NewTaskSheet
+      {project.description && (
+        <p className="text-sm text-white/50 whitespace-pre-wrap">{project.description}</p>
+      )}
+
+      {/* Tabs */}
+      <Tabs defaultValue="tasks">
+        <TabsList className="bg-white/[0.04] border border-white/[0.07]">
+          <TabsTrigger value="tasks">Tarefas ({tasks.length})</TabsTrigger>
+          <TabsTrigger value="brief">Brief{brief ? ' ✓' : ''}</TabsTrigger>
+          <TabsTrigger value="timeline">Cronograma</TabsTrigger>
+          <TabsTrigger value="assets">Assets ({assets.length})</TabsTrigger>
+        </TabsList>
+
+        {/* TAREFAS */}
+        <TabsContent value="tasks" className="pt-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium text-white/60">{tasks.length} tarefa{tasks.length !== 1 ? 's' : ''}</h2>
+            <NewTaskSheet
+              workspaceId={workspace.id}
+              workspaceSlug={workspaceSlug}
+              projects={[project]}
+              clients={clients}
+              members={members}
+            />
+          </div>
+          <ProjectTaskList tasks={tasks} workspaceSlug={workspaceSlug} />
+        </TabsContent>
+
+        {/* BRIEF */}
+        <TabsContent value="brief" className="pt-4">
+          <CampaignBriefTab
+            brief={brief}
+            projectId={projectId}
             workspaceId={workspace.id}
             workspaceSlug={workspaceSlug}
-            projects={clients.length > 0 ? [project] : [project]}
-            clients={clients}
-            members={members}
           />
-        </div>
-        <ProjectTaskList tasks={tasks} workspaceSlug={workspaceSlug} />
-      </div>
+        </TabsContent>
+
+        {/* TIMELINE */}
+        <TabsContent value="timeline" className="pt-4">
+          <ProjectTimeline tasks={tasks} />
+        </TabsContent>
+
+        {/* ASSETS */}
+        <TabsContent value="assets" className="pt-4">
+          {assets.length === 0 ? (
+            <EmptyState
+              icon={Layers}
+              title="Nenhum asset neste projeto"
+              description="Faça upload na página de Assets e vincule a este projeto."
+            />
+          ) : (
+            <div className="card-sun rounded-xl divide-y divide-white/[0.06]">
+              {assets.map((asset) => (
+                <div key={asset.id} className="flex items-center gap-4 px-5 py-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white/80 truncate">{asset.name}</p>
+                    <p className="text-xs text-white/30 mt-0.5">
+                      {(asset.size / 1024 / 1024).toFixed(2)} MB · {asset.file_type}
+                      {asset.version > 1 && ` · v${asset.version}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <a
+                      href={asset.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-white/40 hover:text-[#ff5600] transition-colors"
+                    >
+                      Ver
+                    </a>
+                    <AssetApprovalActions
+                      assetId={asset.id}
+                      currentStatus={asset.approval_status as 'pending' | 'approved' | 'rejected'}
+                      workspaceSlug={workspaceSlug}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
